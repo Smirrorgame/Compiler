@@ -1,7 +1,7 @@
 package com.github.smirrorgame.compiler;
 
 public enum TokenType {
-	Left_PARENTHSIS,
+	Left_PARENTHESIS,
 	RIGHT_PARENTHESIS,
 	LEFT_BRACE,
 	RIGHT_BRACE,
@@ -43,5 +43,5 @@ public enum TokenType {
 	LET,
 	WHILE,
 	
-	OEF
+	EOF
 }
