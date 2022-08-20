@@ -22,6 +22,7 @@ public class App
     	}
     	
     	System.out.println(src);
+    	run(src);
     }
     
     public static void run(String src) {

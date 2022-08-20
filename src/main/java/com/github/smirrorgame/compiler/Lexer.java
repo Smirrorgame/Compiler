@@ -8,8 +8,8 @@ public class Lexer {
 	private String src;
 	private List<Token> tokens = new ArrayList<>();
 	private int start = 0;
-	  private int current = 0;
-	  private int line = 1;
+	private int current = 0;
+	private int line = 1;
 	
 	
 	public Lexer(String src) {
@@ -34,6 +34,7 @@ public class Lexer {
 			break;
 
 		default:
+			Error.error(line, current, "Not Supported (yet?)");
 			break;
 		}
 	}
