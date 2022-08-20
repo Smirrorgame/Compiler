@@ -18,7 +18,7 @@ public class LexerTest {
 		
 		List<Token> tokens = lexer.tokenize();
 		
-		assertTrue(tokens.size()==2);
+		assertEquals(2, tokens.size());
 		// Token (
 		Token t = tokens.get(0);
 		assertEquals(TokenType.Left_PARENTHESIS, t.type);
