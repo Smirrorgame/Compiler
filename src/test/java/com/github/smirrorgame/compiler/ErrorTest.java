@@ -36,6 +36,8 @@ public class ErrorTest {
 	@Test
 	public void test_error() {
 		Error.error(0, 7, "Not supported");
-		assertEquals("[Line 0, column 7] Error: Not supported\r\n", errors.toString());
+		String errorString = errors.toString();
+		errorString = errorString.replace("\n", "").replace("\r", "");
+		assertEquals("[Line 0, column 7] Error: Not supported", errorString);
 	}
 }
