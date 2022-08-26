@@ -169,10 +169,6 @@ public class Lexer {
 		return src.charAt(current + 1);
 	}
 
-	private char previous() {
-		if(current == 0) return peek();
-		return src.charAt(current - 1);
-	}
 	private boolean match(char expected) {
 		if(isAtEnd()) return false;
 		if(src.charAt(current) != expected) return false;
