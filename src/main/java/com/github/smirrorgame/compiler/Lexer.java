@@ -12,6 +12,7 @@ public class Lexer {
 	private int start = 0;
 	private int current = 0;
 	private int line = 1;
+	private int col = 0;
 	private static final Map<String, TokenType> reserved;
 
 	static {
@@ -44,7 +45,7 @@ public class Lexer {
 			lexToken();
 		}
 		
-		tokens.add(new Token(TokenType.EOF, "", null, line));
+		tokens.add(new Token(TokenType.EOF, "", null, line, col));
 		return tokens;
 	}
 
@@ -88,6 +89,7 @@ public class Lexer {
 				break;
 			case '\n':
 				line++;
+				col = 0;
 				break;
 //			literals and reserved keywords
 			case '"':
@@ -143,6 +145,7 @@ public class Lexer {
 				Error.error(line, current, "missing a double quote to terminate string.");
 				hasError = true;
 				line++;
+				col = -1;
 			}
 			advance();
 		}
@@ -162,19 +165,24 @@ public class Lexer {
 	}
 	
 	private char peekNext() {
-		if(current +1 >= src.length()) return '\0';
+		if(current + 1 >= src.length()) return '\0';
 		return src.charAt(current + 1);
 	}
 
+	private char previous() {
+		if(current == 0) return peek();
+		return src.charAt(current - 1);
+	}
 	private boolean match(char expected) {
 		if(isAtEnd()) return false;
 		if(src.charAt(current) != expected) return false;
-		
+		col++;
 		current++;
 		return true;
 	}
 
 	private char advance() {
+		++col;
 		return src.charAt(current++);
 	}
 
@@ -184,7 +192,7 @@ public class Lexer {
 	
 	private void addToken(TokenType type, Object literal) {
 		String lexeme = src.substring(start, current);
-		tokens.add(new Token(type, lexeme, literal, line));
+		tokens.add(new Token(type, lexeme, literal, line, col - (current-start)));
 	}
 
 	private boolean isAtEnd() {
