@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.github.smirrorgame.compiler.Expr.Binary;
 import com.github.smirrorgame.compiler.Expr.Grouping;
 import com.github.smirrorgame.compiler.Expr.Literal;
 import com.github.smirrorgame.compiler.Expr.Unary;
@@ -29,7 +30,6 @@ class ParserTest {
 		tokens = l.tokenize();
 		p = new Parser(tokens);
 	}
-	
 	
 	@Test
 	public void test_primary() {
@@ -226,4 +226,230 @@ class ParserTest {
 //		check if value of literal is '10.0' as expected
 		assertEquals(10.0, ((Literal) res_unary_group.expression).value);
 	}
+	
+	@Test
+	public void test_factor() {
+		
+		
+//		TESTING ASTERISK
+		
+		String src_asterisk = "3*2";
+		setUp(src_asterisk);
+		Expr res = p.parse();
+		assertTrue(res instanceof Binary);
+		Binary res_binary = (Binary) res;
+		assertTrue(res_binary.left instanceof Literal);
+		assertTrue(res_binary.right instanceof Literal);
+		Token operator = new Token(TokenType.ASTERISK, "*", null, 1,1);
+		assertEquals(operator, res_binary.operator);
+		assertEquals(3.0, ((Literal) res_binary.left).value);
+		assertEquals(2.0, ((Literal) res_binary.right).value);
+		
+		
+		String src_asterisk_group= "(3)*2";
+		setUp(src_asterisk_group);
+		res = p.parse();
+		assertTrue(res instanceof Binary);
+		res_binary = (Binary) res;
+		assertTrue(res_binary.left instanceof Grouping);
+		assertTrue(res_binary.right instanceof Literal);
+		operator = new Token(TokenType.ASTERISK, "*", null, 1,3);
+		assertEquals(operator, res_binary.operator);
+		assertEquals(2.0, ((Literal) res_binary.right).value);
+		
+		Grouping res_left_group = (Grouping) res_binary.left;
+		assertTrue(res_left_group.expression instanceof Literal);
+		assertEquals(3.0, ((Literal) res_left_group.expression).value);
+		
+		
+		
+//		TESTING FORWARD_SLASH
+		String src_forwardslash= "1/4";
+		setUp(src_forwardslash);
+		res = p.parse();
+		assertTrue(res instanceof Binary);
+		res_binary = (Binary) res;
+		assertTrue(res_binary.left instanceof Literal);
+		assertTrue(res_binary.right instanceof Literal);
+		operator = new Token(TokenType.FORWARD_SLASH, "/", null, 1,1);
+		assertEquals(operator, res_binary.operator);
+		assertEquals(1.0, ((Literal) res_binary.left).value);
+		assertEquals(4.0, ((Literal) res_binary.right).value);
+		
+		String src_slash_group= "(1)/4";
+		setUp(src_slash_group);
+		res = p.parse();
+		assertTrue(res instanceof Binary);
+		res_binary = (Binary) res;
+		assertTrue(res_binary.left instanceof Grouping);
+		assertTrue(res_binary.right instanceof Literal);
+		operator = new Token(TokenType.FORWARD_SLASH, "/", null, 1,3);
+		assertEquals(operator, res_binary.operator);
+		assertEquals(4.0, ((Literal) res_binary.right).value);
+		
+		res_left_group = (Grouping) res_binary.left;
+		assertTrue(res_left_group.expression instanceof Literal);
+		assertEquals(1.0, ((Literal) res_left_group.expression).value);
+	}
+
+	@Test
+	public void test_term() {
+		
+//		TEST MINUS
+		String src_minus = "3-2";
+		setUp(src_minus);
+		Expr res = p.parse();
+		assertTrue(res instanceof Binary);
+		Binary res_binary = (Binary) res;
+		Token operator = new Token(TokenType.MINUS, "-", null, 1, 1);
+		assertEquals(operator, res_binary.operator);
+		assertTrue(res_binary.left instanceof Literal);
+		assertTrue(res_binary.right instanceof Literal);
+		
+		assertEquals(3.0, ((Literal) res_binary.left).value);
+		assertEquals(2.0, ((Literal) res_binary.right).value);
+		
+		
+//		TEST MINUS GROUPING
+		String src_minus_group = "3-(2)";
+		setUp(src_minus_group);
+		res = p.parse();
+		assertTrue(res instanceof Binary);
+		res_binary = (Binary) res;
+		operator = new Token(TokenType.MINUS, "-", null, 1, 1);
+		assertEquals(operator, res_binary.operator);
+		assertTrue(res_binary.left instanceof Literal);
+		assertTrue(res_binary.right instanceof Grouping);
+		assertEquals(3.0, ((Literal) res_binary.left).value);
+		Grouping res_binary_group = (Grouping) res_binary.right;
+		assertTrue(res_binary_group.expression instanceof Literal);
+		assertEquals(2.0, ((Literal) res_binary_group.expression).value);
+		
+		
+//		TEST PLUS		
+		String src_plus= "1+50";
+		setUp(src_plus);
+		res = p.parse();
+		assertTrue(res instanceof Binary);
+		res_binary = (Binary) res;
+		operator = new Token(TokenType.PLUS, "+", null, 1, 1);
+		assertEquals(operator, res_binary.operator);
+		assertTrue(res_binary.left instanceof Literal);
+		assertTrue(res_binary.right instanceof Literal);
+		
+		assertEquals(1.0, ((Literal) res_binary.left).value);
+		assertEquals(50.0, ((Literal) res_binary.right).value);
+		
+//		TEST PLUS GROUPING
+		String src_plus_group = "3+(2)";
+		setUp(src_plus_group);
+		res = p.parse();
+		assertTrue(res instanceof Binary);
+		res_binary = (Binary) res;
+		operator = new Token(TokenType.PLUS, "+", null, 1, 1);
+		assertEquals(operator, res_binary.operator);
+		assertTrue(res_binary.left instanceof Literal);
+		assertTrue(res_binary.right instanceof Grouping);
+		assertEquals(3.0, ((Literal) res_binary.left).value);
+		res_binary_group = (Grouping) res_binary.right;
+		assertTrue(res_binary_group.expression instanceof Literal);
+		assertEquals(2.0, ((Literal) res_binary_group.expression).value);
+		
+	}
+
+	@Test
+	public void test_comparison() {
+		
+//		TEST GREATER
+		String src_greater = "2>1";
+		setUp(src_greater);
+		Expr res = p.parse();
+		assertTrue(res instanceof Binary);
+		Binary res_bin = (Binary) res;
+		assertTrue(res_bin.left instanceof Literal);
+		assertTrue(res_bin.right instanceof Literal);
+		
+		Token operator = new Token(TokenType.GREATER, ">", null, 1, 1);
+		assertEquals(operator, res_bin.operator);
+		assertEquals(2.0, ((Literal) res_bin.left).value);
+		assertEquals(1.0, ((Literal) res_bin.right).value);
+		
+		
+//		TEST GREATER_EQUAL
+		String src_greaterequal = "10>=2";
+		setUp(src_greaterequal);
+		res = p.parse();
+		assertTrue(res instanceof Binary);
+		res_bin = (Binary) res;
+		assertTrue(res_bin.left instanceof Literal);
+		assertTrue(res_bin.right instanceof Literal);
+		
+		operator = new Token(TokenType.GREATER_EQUAL, ">=", null, 1, 2);
+		assertEquals(operator, res_bin.operator);
+		assertEquals(10.0, ((Literal) res_bin.left).value);
+		assertEquals(2.0, ((Literal) res_bin.right).value);
+		
+//		TEST LESS
+		String src_less= "1<20";
+		setUp(src_less);
+		res = p.parse();
+		assertTrue(res instanceof Binary);
+		res_bin = (Binary) res;
+		assertTrue(res_bin.left instanceof Literal);
+		assertTrue(res_bin.right instanceof Literal);
+		
+		operator = new Token(TokenType.LESS, "<", null, 1, 1);
+		assertEquals(operator, res_bin.operator);
+		assertEquals(1.0, ((Literal) res_bin.left).value);
+		assertEquals(20.0, ((Literal) res_bin.right).value);
+		
+		
+//		TEST LESS_EQUAL
+		String src_lessequal = "1<=2";
+		setUp(src_lessequal);
+		res = p.parse();
+		assertTrue(res instanceof Binary);
+		res_bin = (Binary) res;
+		assertTrue(res_bin.left instanceof Literal);
+		assertTrue(res_bin.right instanceof Literal);
+		
+		operator = new Token(TokenType.LESS_EQUAL, "<=", null, 1, 1);
+		assertEquals(operator, res_bin.operator);
+		assertEquals(1.0, ((Literal) res_bin.left).value);
+		assertEquals(2.0, ((Literal) res_bin.right).value);
+		
+	}
+
+	@Test
+	public void test_equality() {
+		String src_not_equal = "\"13\" != 13";
+		setUp(src_not_equal);
+		Expr res = p.parse();
+		
+		assertTrue(res instanceof Binary);
+		Binary res_bin = (Binary) res;
+		assertTrue(res_bin.left instanceof Literal);
+		assertTrue(res_bin.right instanceof Literal);
+		
+		Token operator = new Token(TokenType.NOT_EQUAL, "!=", null, 1, 5);
+		assertEquals(operator, res_bin.operator);
+		assertEquals("13", ((Literal) res_bin.left).value);
+		assertEquals(13.0, ((Literal) res_bin.right).value);
+		
+		
+		String src_equal = "13 == 13";
+		setUp(src_equal);
+		res = p.parse();
+		
+		assertTrue(res instanceof Binary);
+		res_bin = (Binary) res;
+		assertTrue(res_bin.left instanceof Literal);
+		assertTrue(res_bin.right instanceof Literal);
+		
+		operator = new Token(TokenType.EQUAL_EQUAL, "==", null, 1, 3);
+		assertEquals(operator, res_bin.operator);
+		assertEquals(13.0, ((Literal) res_bin.left).value);
+		assertEquals(13.0, ((Literal) res_bin.right).value);		
+	}
+	
 }
