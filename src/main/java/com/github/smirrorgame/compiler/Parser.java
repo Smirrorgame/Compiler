@@ -123,9 +123,9 @@ public class Parser {
 	
 	private Expr primary() {
 
-		if(checkTokenType(TokenType.TRUE)) return new Literal(true);
-		if(checkTokenType(TokenType.FALSE)) return new Literal(false);
-		if(checkTokenType(TokenType.NULL)) return new Literal(null);
+		if(matchesAnyTokenType(TokenType.TRUE)) return new Literal(true);
+		if(matchesAnyTokenType(TokenType.FALSE)) return new Literal(false);
+		if(matchesAnyTokenType(TokenType.NULL)) return new Literal(null);
 		
 		if(matchesAnyTokenType(TokenType.Number, TokenType.STRING)) {
 			return new Literal(previous().literal);
