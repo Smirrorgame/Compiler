@@ -18,20 +18,21 @@ public class LexerTest {
 	
 	@Test
 	public void test_singleCharacterTokens() {
-		String src = "(){},.-+;*/";
+		String src = "(){},.\n-+;*/";
 		setUpLexer(src);
 		Token[] expected = {
-				new Token(TokenType.Left_PARENTHESIS, "(", null, 1),
-				new Token(TokenType.RIGHT_PARENTHESIS, ")", null, 1),
-				new Token(TokenType.LEFT_BRACE, "{", null, 1),
-				new Token(TokenType.RIGHT_BRACE, "}", null, 1),
-				new Token(TokenType.COMMA, ",", null, 1),
-				new Token(TokenType.DOT, ".", null, 1),
-				new Token(TokenType.MINUS, "-", null, 1),
-				new Token(TokenType.PLUS, "+", null, 1),
-				new Token(TokenType.SEMICOLON, ";", null, 1),
-				new Token(TokenType.ASTERISK, "*", null, 1),
-				new Token(TokenType.FORWARD_SLASH, "/", null, 1),
+				new Token(TokenType.Left_PARENTHESIS, "(", null, 1,0),
+				new Token(TokenType.RIGHT_PARENTHESIS, ")", null, 1,1),
+				new Token(TokenType.LEFT_BRACE, "{", null, 1,2),
+				new Token(TokenType.RIGHT_BRACE, "}", null, 1,3),
+				new Token(TokenType.COMMA, ",", null, 1,4),
+				new Token(TokenType.DOT, ".", null, 1,5),
+				new Token(TokenType.MINUS, "-", null, 2,0),
+				new Token(TokenType.PLUS, "+", null, 2,1),
+				new Token(TokenType.SEMICOLON, ";", null, 2,2),
+				new Token(TokenType.ASTERISK, "*", null, 2,3),
+				new Token(TokenType.FORWARD_SLASH, "/", null, 2,4),
+				new Token(TokenType.EOF, "", null, 2,5),
 		};
 		List<Token> tokens = lexer.tokenize();
 		
@@ -47,14 +48,15 @@ public class LexerTest {
 		String src = "! != = == > >= < <=";
 		setUpLexer(src);
 		Token[] expected = {
-				new Token(TokenType.NOT, "!", null, 1),
-				new Token(TokenType.NOT_EQUAL, "!=", null, 1),
-				new Token(TokenType.EQUAL, "=", null, 1),
-				new Token(TokenType.EQUAL_EQUAL, "==", null, 1),
-				new Token(TokenType.GREATER, ">", null, 1),
-				new Token(TokenType.GREATER_EQUAL, ">=", null, 1),
-				new Token(TokenType.LESS, "<", null, 1),
-				new Token(TokenType.LESS_EQUAL, "<=", null, 1),
+				new Token(TokenType.NOT, "!", null, 1,0),
+				new Token(TokenType.NOT_EQUAL, "!=", null, 1,2),
+				new Token(TokenType.EQUAL, "=", null, 1,5),
+				new Token(TokenType.EQUAL_EQUAL, "==", null, 1,7),
+				new Token(TokenType.GREATER, ">", null, 1,10),
+				new Token(TokenType.GREATER_EQUAL, ">=", null, 1,12),
+				new Token(TokenType.LESS, "<", null, 1,15),
+				new Token(TokenType.LESS_EQUAL, "<=", null, 1,17),
+				new Token(TokenType.EOF, "", null, 1,19),
 		};
 		List<Token> tokens = lexer.tokenize();
 		
@@ -70,22 +72,22 @@ public class LexerTest {
 		String src = "let x = \"Test\"\nlet y = 133.7";
 		setUpLexer(src);
 		Token[] expected = {
-				new Token(TokenType.LET, "let", null, 1),
-				new Token(TokenType.IDENTIFIER, "x", null, 1),
-				new Token(TokenType.EQUAL, "=", null, 1),
-				new Token(TokenType.STRING, "\"Test\"", "Test", 1),
-				new Token(TokenType.LET, "let", null, 2),
-				new Token(TokenType.IDENTIFIER, "y", null, 2),
-				new Token(TokenType.EQUAL, "=", null, 2),
-				new Token(TokenType.Number, "133.7", 133.7, 2),
-				new Token(TokenType.EOF, "", null, 2),
+				new Token(TokenType.LET, "let", null, 1,0),
+				new Token(TokenType.IDENTIFIER, "x", null, 1,4),
+				new Token(TokenType.EQUAL, "=", null, 1,6),
+				new Token(TokenType.STRING, "\"Test\"", "Test", 1,8),
+				new Token(TokenType.LET, "let", null, 2,0),
+				new Token(TokenType.IDENTIFIER, "y", null, 2,4),
+				new Token(TokenType.EQUAL, "=", null, 2,6),
+				new Token(TokenType.Number, "133.7", 133.7, 2,8),
+				new Token(TokenType.EOF, "", null, 2,13),
 		};
-		List<Token> tokens = lexer.tokenize();
+		List<Token> tokens = lexer.tokenize();		
 		
 		for(int i=0;i<expected.length;i++) {
-			Token tok = tokens.get(i);
+			Token actual = tokens.get(i);
 			Token exp = expected[i];
-			assertEquals(exp, tok);
+			assertEquals(exp, actual);
 		}
 	}
 	
@@ -94,22 +96,23 @@ public class LexerTest {
 		String src = "and class else false funct for if null or print return super this true let while";
 		setUpLexer(src);
 		Token[] expected = {
-				new Token(TokenType.AND, "and", null, 1),
-				new Token(TokenType.CLASS, "class", null, 1),
-				new Token(TokenType.ELSE, "else", null, 1),
-				new Token(TokenType.FALSE, "false", null, 1),
-				new Token(TokenType.FUNCT, "funct", null, 1),
-				new Token(TokenType.FOR, "for", null, 1),
-				new Token(TokenType.IF, "if", null, 1),
-				new Token(TokenType.NULL, "null", null, 1),
-				new Token(TokenType.OR, "or", null, 1),
-				new Token(TokenType.PRINT, "print", null, 1),
-				new Token(TokenType.RETURN, "return", null, 1),
-				new Token(TokenType.SUPER, "super", null, 1),
-				new Token(TokenType.THIS, "this", null, 1),
-				new Token(TokenType.TRUE, "true", null, 1),
-				new Token(TokenType.LET, "let", null, 1),
-				new Token(TokenType.WHILE, "while", null, 1),
+				new Token(TokenType.AND, "and", null, 1,0),
+				new Token(TokenType.CLASS, "class", null, 1,4),
+				new Token(TokenType.ELSE, "else", null, 1,10),
+				new Token(TokenType.FALSE, "false", null, 1,15),
+				new Token(TokenType.FUNCT, "funct", null, 1,21),
+				new Token(TokenType.FOR, "for", null, 1,27),
+				new Token(TokenType.IF, "if", null, 1,31),
+				new Token(TokenType.NULL, "null", null, 1,34),
+				new Token(TokenType.OR, "or", null, 1, 39),
+				new Token(TokenType.PRINT, "print", null, 1, 42),
+				new Token(TokenType.RETURN, "return", null, 1, 48),
+				new Token(TokenType.SUPER, "super", null, 1,55),
+				new Token(TokenType.THIS, "this", null, 1,61),
+				new Token(TokenType.TRUE, "true", null, 1,66),
+				new Token(TokenType.LET, "let", null, 1,71),
+				new Token(TokenType.WHILE, "while", null, 1,75),
+				new Token(TokenType.EOF, "", null, 1, 80),
 		};
 		List<Token> tokens = lexer.tokenize();
 		
@@ -135,7 +138,7 @@ public class LexerTest {
 		List<Token> tokens = lexer.tokenize();
 		assertEquals(1, tokens.size());
 		Token eof_tok = tokens.get(0);
-		Token exp = new Token(TokenType.EOF, "", null, 3);
+		Token exp = new Token(TokenType.EOF, "", null, 3,28);
 		assertEquals(exp, eof_tok);
 		
 		String errorString = errors.toString();
@@ -160,7 +163,8 @@ public class LexerTest {
 		// checking EOF token
 		List<Token> tokens = lexer.tokenize();
 		Token eof_tok = tokens.get(0);
-		Token exp = new Token(TokenType.EOF, "", null, 2);
+		//TODO: Token colon is 49 but should be 48 because "multiline string\"\"This is an unterminated string" has length 48
+		Token exp = new Token(TokenType.EOF, "", null, 2, 48);
 		assertEquals(1, tokens.size());
 		assertEquals(exp, eof_tok);
 		
@@ -189,10 +193,10 @@ public class LexerTest {
 		Token dot_tok = tokens.get(2);
 		Token eof_tok = tokens.get(3);
 		
-		Token exp_dec = new Token(TokenType.Number, "1337.42", 1337.42, 1);
-		Token exp_int = new Token(TokenType.Number, "1337", 1337.0, 2);
-		Token exp_dot = new Token(TokenType.DOT, ".", null, 2);
-		Token exp_eof = new Token(TokenType.EOF, "", null, 2);
+		Token exp_dec = new Token(TokenType.Number, "1337.42", 1337.42, 1,0);
+		Token exp_int = new Token(TokenType.Number, "1337", 1337.0, 2, 0);
+		Token exp_dot = new Token(TokenType.DOT, ".", null, 2,4);
+		Token exp_eof = new Token(TokenType.EOF, "", null, 2,5);
 		assertEquals(exp_dec, dec_tok);
 		assertEquals(exp_int, int_tok);
 		assertEquals(exp_dot, dot_tok);
